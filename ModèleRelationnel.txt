@@ -2,15 +2,35 @@ Examen(examenId, nom, prix)
     PK: examenId
 
 
-Facture(date, coutsMateriel, coutsChambre, coutsDivers, coutsTotaux)
+Employe(employeId, nom, adress, email, dateNaissance, salaire, dateEmbauche)
+    PK: employeId
+
+
+Medicament(medicamentId, nom, prix)
+    PK: medicamentId
+
+Chambre(chambreId, type, prix)
+    PK: chambreId
+
+
+Docteur(employeId, qualification)
+    PK: employeId
+    FK: employeId REFERENCES Employe(employeId)
+
+
+Patient(patientId, employeId, nom, adresse, sexe, email, dateNaissance, groupeSanguin, noTelephone, dateArrivee, maladie)
+    PK: patientId
+    FK: employeId REFERENCES Docteur(employeId)
+
+
+Facture(date, patientId, coutsMateriel, coutsChambre, coutsDivers, coutsTotaux)
     PK: date, patientId
     FK: patientId REFERENCES Patient(patientId)
 
-   
 
-Patient(patientId, nom, adresse, sexe, email, dateNaissance, groupeSanguin, noTelephone, dateArrivee, maladie)
-    PK: patientId
-
+Infirmier(employeId, nombrePatients)
+    PK: employeId
+    FK: employeId REFERENCES Employe(employeId)
 
 
 PatientSubitExamen(examenId, patientId, dateExamen)
@@ -18,17 +38,14 @@ PatientSubitExamen(examenId, patientId, dateExamen)
     FK: examenId REFERENCES Examen(examenId), patientId REFERENCES Patient(patientId)
 
 
-
 PatientPrendsMedicament(patientId, medicamentId, date, quantite)
     PK: patientId, medicamentId
     FK: patientId REFERENCES Patient(patientId), medicamentId REFERENCES Medicament(medicamentId)
  
 
-
 PatientAdmis(patientId, employeId, dateDepart)
     PK: patientId
     FK: patientId REFERENCES Patient(patientId), employeId REFERENCES Infirmier(employeId)
-
 
 
 PatientAdmisResideDansChambre(patientId, chambreId, dateArrivee)
@@ -36,37 +53,14 @@ PatientAdmisResideDansChambre(patientId, chambreId, dateArrivee)
     FK: patientId REFERENCES PatientAdmis(patientId), chambreId REFERENCES Chambre(chambreId)
 
 
-
-Medicament(medicamentId, nom, prix)
-    PK: medicamentId
-
-
-
-Chambre(chambreId, type, prix)
-    PK: chambreId
-
-
-
 ContactUrgence(contactID, patientId, lien, numTel, nom)
     PK: contactID, patientId
     FK: patientId REFERENCES Patient(patientId)
 
 
-
-Employee(employeId, nom, adress, email, dateNaissance, salaire, dateEmbauche)
-    PK: employeId
-
-
-
 Docteur(employeId, qualification)
     PK: employeId
-    FK: employeId REFERENCES Employee(employeId)
-
-
-
-Infirmier(employeId, nombrePatients)
-    PK: employeId
-    FK: employeId REFERENCES Employee(employeId)
+    FK: employeId REFERENCES Employe(employeId)
 
 
 
@@ -74,13 +68,13 @@ EmployeActif(employeId, nom, adress, email, dateNaissance, salaire, dateEmbauche
     PK: employeId
 
 
-
 EmployePassif(employeId, nom, adress, email, dateNaissance, salaire, dateEmbauche, dateFinActivite)
     PK: employeId
 
 
-Departement(departementId, nom)
+Departement(departementId, employeId,nom)
     PK: departementId
+    FK: employeId REFERENCES Employe(employeId)
 
 
 EmployePassifTravaillaitDansDepartement(employeId, departementId, dateFin)
