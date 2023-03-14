@@ -2,15 +2,20 @@ drop schema if exists University_schema cascade;
 create schema if not exists University_schema;
 set search_path = University_schema;
 
+create domain University_schema.sexeType as char
+	check (value in ('M', 'F', 'NB'));
 
 create table Etudiant(
 sid					varchar(10)					primary key,
 snom				varchar(20)				    not null,
---sexe				char(1)				not null,
+sexe				sexeType					default 'NB',
 dateNaissance		date					    not null,
 niveau				varchar(5)					not null,
 moyenne				varchar(5)					not null
 );
+
+
+
 
 create table Dept(
 dID					varchar(20)				    primary key,
@@ -32,12 +37,12 @@ foreign key (dep) references Dept(dID)
 );
 
 create table section( 
-cno 				varchar(5),
-sectno				varchar(5),
-pID					varchar(5)                  not null,
+cno 				varchar(5)					unique,
+sectno				varchar(5)					unique,
+pID					varchar(5)                  not null unique,
 primary key (cno, sectno),
-foreign key (pID) references Prof(pID),
-foreign key (cno) references Cours(cno)
+foreign key (pID) references Prof(pID) on DELETE set null,
+foreign key (cno) references Cours(cno) on DELETE cascade
 );
 
 create table Inscription (
@@ -51,3 +56,6 @@ foreign key (sid) references Etudiant (sid),
 foreign key (cno) references section (cno),
 foreign key (sectno) references section (sectno)
 ); 
+
+
+
