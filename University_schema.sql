@@ -1,61 +1,60 @@
-drop schema if exists University_schema cascade;
-create schema if not exists University_schema;
-set search_path = University_schema;
+SET search_path = university_schema;
+
+DROP SCHEMA IF EXISTS university_schema CASCADE;
+CREATE SCHEMA University_schema;
 
 create domain University_schema.sexeType as char
 	check (value in ('M', 'F', 'NB'));
 
-create table Etudiant(
-sid					varchar(10)					primary key,
-snom				varchar(20)				    not null,
-sexe				sexeType					default 'NB',
-dateNaissance		date					    not null,
-niveau				varchar(5)					not null,
-moyenne				varchar(5)					not null
+CREATE TABLE IF NOT EXISTS  university_schema.Etudiant (
+		sid					VARCHAR(10)		NOT NULL,
+		snom 				VARCHAR(20)		NOT NULL,
+		sexe				sexetype			default 'NB',
+		dateNaissance		date			NOT NULL,
+		niveau 				VARCHAR(5)		NOT NULL,
+		moyenne				VARCHAR(5)		NOT NULL,
+	PRIMARY KEY (sid)
 );
 
+ALTER TABLE university_schema.Etudiant ALTER sexe DROP DEFAULT;
 
-
-
-create table Dept(
-dID					varchar(20)				    primary key,
-nombrephds			integer					    not null
+CREATE TABLE IF NOT EXISTS University_schema.Dept(
+		dID 				VARCHAR(20) 	NOT NULL, 
+		nombrephds 			INTEGER			NOT NULL,
+	PRIMARY KEY (dID)
 );
 
-create table Prof(
-pId					varchar(5)					primary key,
-pnom				varchar(5)				    not null,
-dep					varchar(20)					 not null,
-foreign key (dep) references Dept(dID)
+CREATE TABLE IF NOT EXISTS University_schema.Prof(
+		pID					VARCHAR(5)		NOT NULL,
+		pnom				VARCHAR(5)		NOT NULL,
+		dep 				VARCHAR(20)		NOT NULL,
+	PRIMARY KEY (pID),
+	FOREIGN KEY(dep) REFERENCES University_schema.Dept(dID)
 );
 
-create table Cours (
-cno 				varchar(5)					primary key,
-cnom 				varchar(50)				    not null,
-dep 				varchar(20) 				not null,
-foreign key (dep) references Dept(dID)
+CREATE TABLE IF NOT EXISTS University_schema.Cours(
+		cno					VARCHAR(5)		NOT NULL,
+		cnom				VARCHAR(50)		NOT NULL,
+		dep 				VARCHAR(20)		NOT NULL,
+	PRIMARY KEY (cno),
+	FOREIGN KEY(dep) REFERENCES University_schema.Dept(dID)
 );
 
-create table section( 
-cno 				varchar(5)					unique,
-sectno				varchar(5)					unique,
-pID					varchar(5)                  not null unique,
-primary key (cno, sectno),
-foreign key (pID) references Prof(pID) on DELETE set null,
-foreign key (cno) references Cours(cno) on DELETE cascade
+CREATE TABLE IF NOT EXISTS University_schema.Section(
+		cno					VARCHAR(5)		NOT NULL,
+		sectno	  			VARCHAR(5)		NOT NULL,
+		pID					VARCHAR(5)			NULL,
+	PRIMARY KEY (cno, sectno),
+	FOREIGN KEY (cno) REFERENCES university_schema.Cours(cno) ON DELETE CASCADE,	
+	FOREIGN KEY (pID) REFERENCES university_schema.Prof(pID) ON DELETE set null
 );
 
-create table Inscription (
-sid					varchar(10),
-cno 				varchar(5),
-sectno				varchar(5),
-note				integer                     not null,
-
-primary key (sid, cno, sectno),
-foreign key (sid) references Etudiant (sid),
-foreign key (cno) references section (cno),
-foreign key (sectno) references section (sectno)
-); 
-
-
-
+CREATE TABLE IF NOT EXISTS University_schema.Inscription(
+		sid					VARCHAR(10)		NOT NULL,
+		cno 				varchar(5)		NOT NULL,
+		sectno	  			VARCHAR(5)		NOT NULL,
+		note 				integer			NOT NULL,
+	PRIMARY KEY (sid, cno, sectno),
+	FOREIGN KEY (cno, sectno) REFERENCES university_schema.Section(cno, sectno) ON DELETE CASCADE,	
+	FOREIGN KEY (sid) REFERENCES university_schema.Etudiant(sID) ON DELETE set NULL
+);
